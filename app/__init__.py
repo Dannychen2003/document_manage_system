@@ -54,7 +54,7 @@ def create_app():
     app = Flask(__name__)
     
     # 基本配置
-    app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///documents.db'
+    app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://document_manage_database_user:1MbFj2uKLI0LZN7Afzp2LDpXtpAMhFyR@dpg-ct7jp8g8fa8c73bs6lj0-a.oregon-postgres.render.com/document_manage_database'
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
     app.config['SECRET_KEY'] = os.urandom(24)
     app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(minutes=30)
