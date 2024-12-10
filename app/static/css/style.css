@@ -1,0 +1,87 @@
+body {
+    font-family: 'Microsoft JhengHei', sans-serif;
+    background-color: #f4f4f4;
+    margin: 0;
+    padding: 0;
+}
+
+.container {
+    max-width: 500px;
+    margin: 100px auto;
+    padding: 20px;
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    text-align: center;
+}
+
+h1 {
+    color: #1f4eb3;
+}
+
+.form-group {
+    margin-bottom: 15px;
+}
+
+label {
+    display: block;
+    margin-bottom: 5px;
+    text-align: left;
+}
+
+input[type="text"],
+input[type="password"] {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+button {
+    background-color: #1f4eb3;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    width: 100%;
+}
+
+button:hover {
+    background-color: #243ba1;
+}
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+table, th, td {
+    border: 1px solid #ccc;
+    padding: 10px;
+    text-align: left;
+}
+th, td {
+    padding: 10px;
+    vertical-align: middle;
+}
+.action-buttons {
+    display: flex;
+    gap: 10px;
+}
+.action-buttons form {
+    margin: 0;
+}
+input[type="text"] {
+    width: 100%;
+    padding: 5px;
+}
+.btn {
+    padding: 8px 12px;
+    background-color: #1f4eb3;
+    color: #fff;
+    border: none;
+    cursor: pointer;
+}
+.btn:hover {
+    background-color: #1f4eb3;
+}

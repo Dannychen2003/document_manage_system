@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <!-- 缓存控制元标签 -->
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <title>註冊 - 文件管理系統</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+        .register-form {
+            max-width: 400px;
+            margin: 50px auto;
+            padding: 20px;
+            background-color: #ffffff;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="register-form">
+            <h2 class="text-center mb-4">註冊新用戶</h2>
+            <p class="text-center">當前使用者: <strong>{{ username }}</strong></p>  <!-- 顯示使用者名稱 -->
+            {% with messages = get_flashed_messages() %}
+                {% if messages %}
+                    {% for message in messages %}
+                        <div class="alert alert-danger" role="alert">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+            <form method="POST" action="{{ url_for('main.register') }}">
+                <div class="form-group">
+                    <label for="username">姓名</label>
+                    <input type="text" class="form-control" id="username" name="username" required>
+                </div>
+                <div class="form-group">
+                    <label for="department">單位</label>
+                    <select class="form-control" id="department" name="department" >
+                        <option value="" disabled selected>請選擇單位</option> 
+                        <!-- 默认提示 -->
+                        <option value="principal">校長室</option>
+                        <option value="academic affairs">教務處</option>
+                        <option value="student affairs">學務處</option>
+                        <option value="general affairs">總務處</option>
+                        <option value="secretariat">秘書室</option>
+                        <option value="accounting ">主計室</option>
+                        <option value="personnel">人事室</option>
+                        <option value="research">研發處</option>
+                        <option value="extension">進修推廣部</option>
+                        <option value="library">圖資館</option>
+                        <option value="engineering">海洋工程學院</option>
+                        <option value="management">人文管理學院</option>
+                        <option value="tourism">觀光休閒學院</option>
+                    </select>
+                <div class="form-group">
+                    <label for="account">帳號</label>
+                    <input type="text" class="form-control" id="account" name="account" required>
+                </div>
+                <div class="form-group">
+                    <label for="password">密碼</label>
+                    <input type="password" class="form-control" id="password" name="password" required>
+                </div>
+                <div class="form-group">
+                    <label for="email">電子郵件</label>
+                    <input type="email" class="form-control" id="email" name="email" required>
+                </div>
+                <!-- <div class="form-group form-check">
+                    <input type="checkbox" class="form-check-input" id="is_admin" name="is_admin">
+                    <label class="form-check-label" for="is_admin">是否為系統管理員</label>
+                </div> -->
+                <div class="form-check">
+                    <input type="checkbox" class="form-check-input" id="is_general_recipient" name="is_general_recipient">
+                    <label class="form-check-label" for="is_general_recipient">是否為總收文人員</label>
+                </div>
+                <button type="submit" class="btn btn-primary btn-block">註冊</button>
+            </form>
+            <div class="mt-3 text-center">
+                <a href="{{ url_for('main.login') }}">已有帳號？返回登入</a>
+            </div>
+            <form method="POST" action="{{ url_for('main.logout') }}" class="mt-3">
+                <button type="submit" class="btn btn-danger btn-block">離開</button>
+            </form>
+        </div>
+    </div>
+ 
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.3/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script>
+        window.onpageshow = function(event) {
+            if (event.persisted) {
+                window.location.reload();
+            }
+        };
+        
+        window.history.forward();
+        function noBack() {
+            window.history.forward();
+        }
+    </script>
+    {% block extra_scripts %}{% endblock %}
+</body>
+</html>

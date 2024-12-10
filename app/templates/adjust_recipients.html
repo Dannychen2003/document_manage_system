@@ -1,0 +1,469 @@
+<!doctype html>
+<html lang="zh-TW">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+      <!-- 缓存控制元标签 -->
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <title>電子公文系統</title>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <style>
+    /* 基礎頁面布局 */
+    body {
+        display: flex;
+        flex-direction: column;
+        min-height: 100vh;
+    }
+
+    /* 主要容器 */
+    .box {
+        border-style: none;
+        margin-left: 2%;
+        margin-right: 2%;
+        display: block;
+        overflow: hidden;
+    }
+
+    /* 頁腳樣式 */
+    footer {
+        background-color: #000000;
+        height: 30px;
+        margin-top: auto;
+    }
+
+    .footer-text {
+        text-align: center;
+        font-size: 16px;
+        color: white;
+        line-height: 30px;
+    }
+
+    /* 提示框圖標 */
+    .alert svg {
+        width: 1.5em;
+        height: 1.5em;
+    }
+
+    /* 表單樣式 */
+    .custom-form {
+        max-width: 600px;
+        width: 100%;
+        margin: auto;
+    }
+
+    /* 唯讀輸入框 */
+    .readonly-input {
+        background-color: #bab6b682;
+        cursor: not-allowed;
+    }
+
+    /* 受文者列表容器 */
+    .recipient-list, .approver-list {
+        max-height: 400px;
+        overflow-y: auto;
+        border: 1px solid #dee2e6;
+        border-radius: 6px;
+        padding: 10px;
+        background-color: #f8f9fa;
+        margin-bottom: 10px;
+    }
+
+    /* 受文者項目 */
+    .recipient-item {
+        background-color: white;
+        border: 1px solid #e9ecef;
+        border-radius: 6px;
+        padding: 12px 15px;
+        margin-bottom: 8px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        transition: all 0.2s ease;
+    }
+    .accordion-body {
+        padding: 1rem;
+    }
+
+    /* 調整按鈕組的間距 */
+    .recipient-actions, .approver-list .mt-3 {
+        padding-top: 10px;
+        border-top: 1px solid #dee2e6;
+    }
+
+    /* 調整表單檢查項的間距 */
+    .form-check {
+        margin-bottom: 8px;
+    }
+
+    .recipient-item:hover {
+        background-color: #f8f9fa;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    }
+
+    /* 受文者內容區 */
+    .recipient-content {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        flex: 1;
+    }
+
+    /* 順序號碼 */
+    .order-number {
+        font-weight: 600;
+        color: #495057;
+        min-width: 30px;
+        text-align: center;
+    }
+
+    /* 受文者標籤 */
+    .recipient-label {
+        margin: 0;
+        font-size: 1rem;
+        color: #212529;
+        cursor: pointer;
+    }
+
+    /* 控制按鈕 */
+    .recipient-controls {
+        display: flex;
+        gap: 5px;
+    }
+
+    .recipient-controls button {
+        padding: 4px 8px;
+        border-radius: 4px;
+    }
+
+    /* 全選/取消全選按鈕區 */
+    .recipient-actions {
+        padding-top: 10px;
+        border-top: 1px solid #dee2e6;
+        display: flex;
+        gap: 10px;
+    }
+
+    /* 滾動條美化 */
+    .recipient-list::-webkit-scrollbar {
+        width: 8px;
+    }
+
+    .recipient-list::-webkit-scrollbar-track {
+        background: #f1f1f1;
+        border-radius: 4px;
+    }
+
+    .recipient-list::-webkit-scrollbar-thumb {
+        background: #c1c1c1;
+        border-radius: 4px;
+    }
+
+    .recipient-list::-webkit-scrollbar-thumb:hover {
+        background: #a8a8a8;
+    }
+
+    /* 響應式設計 */
+    @media (max-width: 768px) {
+        .recipient-item {
+            flex-direction: column;
+            gap: 10px;
+        }
+        
+        .recipient-controls {
+            width: 100%;
+            justify-content: flex-end;
+        }
+        .col-md-6 {
+            margin-bottom: 1rem;
+        }
+    }
+    .approver-radio {
+    margin-right: 10px;
+}
+
+.input-group {
+    align-items: start;
+}
+</style>
+    </style>
+</head>
+
+<body>
+    <header>
+        <nav class="navbar navbar-expand-lg navbar-dark" style="background-color: rgb(46, 49, 46);">
+          <div class="container-fluid">
+            <a class="navbar-brand" href="{{ url_for('main.index') }}">電子公文系統</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('main.index') }}">收文夾</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="{{ url_for('main.upload') }}">公文製作</a>
+                    </li>
+                    
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('main.find') }}">查詢</a>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">設定</a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="{{ url_for('main.profile') }}">個人資料設定</a></li>
+                        </ul>
+                    </li>
+                </ul>
+                {% if user %}
+                <span class="navbar-text">
+                    {{ user.username }} - {{ get_department_display_name(user.department) }}&nbsp;&nbsp;
+                </span>
+                {% endif %}
+                <form action="{{ url_for('main.logout') }}" method="post" style="display:inline;">
+                    <button type="submit" class="btn btn-danger">登出</button>
+                </form>
+            </div>
+        </div>
+    </nav>
+    {% if message %}
+    {% if '成功' in message %}
+        <div class="alert alert-success d-flex align-items-center" role="alert">
+    {% elif '錯誤' in message %}
+        <div class="alert alert-danger d-flex align-items-center" role="alert">
+    {% else %}
+        <div class="alert alert-primary d-flex align-items-center" role="alert">
+    {% endif %}
+{% else %}
+    <div class="alert alert-primary d-flex align-items-center" role="alert">
+{% endif %}
+    <svg xmlns="http://www.w3.org/2000/svg" class="bi info-fill flex-shrink-0 me-2" viewBox="0 0 16 16" role="img" aria-label="提示：">
+        <path d="M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16zm.93-9.412-1 4.705c-.07.34.029.533.304.533.194 0 .487-.07.686-.246l-.088.416c-.287.346-.92.598-1.465.598-.703 0-1.002-.422-.808-1.319l.738-3.468c.064-.293.006-.399-.287-.47l-.451-.081.082-.381 2.29-.287zM8 5.5a1 1 0 1 1 0-2 1 1 0 0 1 0 2z"/>
+    </svg>
+    <div>
+        公告: 
+        {% if message %}
+            {{ message }}
+        {% else %}
+            請填寫公文相關資訊
+        {% endif %}
+    </div>
+</div>
+
+    </header>
+
+    <main class="container mt-4">
+        <h1 style="text-align:left;text-decoration-line: overline;text-decoration-color:#111111;">流程設定</h1><br>
+
+        <div class="container mt-4">
+            <h2>加會流程 - {{ document.subject }}</h2>
+            <form id="adjustForm" method="POST">
+                <div class="form-group">
+                    <label>受文者</label>
+                    <div id="recipientList" class="mb-3">
+                        <!-- 這裡會動態添加受文者 -->
+                    </div>
+                    <button type="button" class="btn btn-secondary" onclick="addRecipient()">新增受文者</button>
+                </div>
+        
+                <div class="form-group">
+                    <label for="approver" class="required">決行者</label>
+                    <select name="approver" id="approver" class="form-control" required>
+                        <option value="">請選擇決行者</option>
+                        {% for user in users %}
+                            <option value="{{ user.id }}" 
+                                    {% if current_approver and current_approver.user_id == user.id %}selected{% endif %}>
+                                {{ user.username }} ({{ user.department }})
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+        
+                <input type="hidden" name="recipients" id="recipientsData">
+                
+                <div class="mt-4">
+                    <button type="submit" class="btn btn-primary">確認調整</button>
+                    <a href="{{ url_for('main.view_document', doc_id=document.id) }}" class="btn btn-secondary">取消</a>
+                </div>
+            </form>
+        </div>
+    </main>
+    <footer>
+        <p class="footer-text">©2024專題</p>
+    </footer>
+
+<script>
+    // 初始化受文者列表
+    let recipients = JSON.parse('{{ current_recipients | tojson | safe }}');
+    let allUsers = JSON.parse('{{ users | tojson | safe }}');
+    let departmentMapping = JSON.parse('{{ department_mapping | tojson | safe }}');
+    
+    function addRecipient() {
+        const recipientList = document.getElementById('recipientList');
+        const newRecipientDiv = document.createElement('div');
+        newRecipientDiv.className = 'recipient-item mb-3';
+        
+        const order = recipients.length + 1;
+        
+        // 創建選擇用戶的下拉選單
+        const userSelect = document.createElement('select');
+        userSelect.className = 'form-select';
+        userSelect.innerHTML = '<option value="">請選擇受文者</option>';
+        
+        allUsers.forEach(user => {
+            const option = document.createElement('option');
+            option.value = user.id;
+            option.textContent = `${user.username} (${departmentMapping[user.department] || user.department})`;
+            userSelect.appendChild(option);
+        });
+        
+        userSelect.onchange = (e) => {
+            recipients[recipients.length - 1].id = e.target.value;
+        };
+        
+        // 創建刪除按鈕
+        const deleteButton = document.createElement('button');
+        deleteButton.type = 'button';
+        deleteButton.className = 'btn btn-danger ms-2';
+        deleteButton.textContent = '刪除';
+        deleteButton.onclick = () => removeRecipient(order - 1);
+        
+        // 創建順序顯示
+        const orderSpan = document.createElement('span');
+        orderSpan.className = 'me-2';
+        orderSpan.textContent = `${order}.`;
+        
+        // 組合元素
+        const inputGroup = document.createElement('div');
+        inputGroup.className = 'input-group';
+        inputGroup.appendChild(orderSpan);
+        inputGroup.appendChild(userSelect);
+        inputGroup.appendChild(deleteButton);
+        
+        newRecipientDiv.appendChild(inputGroup);
+        recipientList.appendChild(newRecipientDiv);
+        
+        // 更新recipients陣列
+        recipients.push({ id: '', order: order });
+    }
+    
+    function removeRecipient(index) {
+        recipients.splice(index, 1);
+        // 重新計算順序
+        recipients.forEach((recipient, idx) => {
+            recipient.order = idx + 1;
+        });
+        updateRecipientsList();
+    }
+    
+    function updateRecipientsList() {
+        const recipientList = document.getElementById('recipientList');
+        recipientList.innerHTML = '';
+        
+        recipients.forEach((recipient, index) => {
+            const recipientDiv = document.createElement('div');
+            recipientDiv.className = 'recipient-item mb-3';
+            
+            const userSelect = document.createElement('select');
+            userSelect.className = 'form-select';
+            userSelect.innerHTML = '<option value="">請選擇受文者</option>';
+            
+            allUsers.forEach(user => {
+                const option = document.createElement('option');
+                option.value = user.id;
+                option.textContent = `${user.username} (${departmentMapping[user.department] || user.department})`;
+                if (user.id === recipient.id) {
+                    option.selected = true;
+                }
+                userSelect.appendChild(option);
+            });
+            
+            userSelect.onchange = (e) => {
+                recipients[index].id = e.target.value;
+            };
+            
+            const orderSpan = document.createElement('span');
+            orderSpan.className = 'me-2';
+            orderSpan.textContent = `${index + 1}.`;
+            
+            const deleteButton = document.createElement('button');
+            deleteButton.type = 'button';
+            deleteButton.className = 'btn btn-danger ms-2';
+            deleteButton.textContent = '刪除';
+            deleteButton.onclick = () => removeRecipient(index);
+            
+            const inputGroup = document.createElement('div');
+            inputGroup.className = 'input-group';
+            inputGroup.appendChild(orderSpan);
+            inputGroup.appendChild(userSelect);
+            inputGroup.appendChild(deleteButton);
+            
+            recipientDiv.appendChild(inputGroup);
+            recipientList.appendChild(recipientDiv);
+        });
+    }
+    
+    // 表單提交處理
+    document.getElementById('adjustForm').onsubmit = function(e) {
+        e.preventDefault();
+        
+        // 驗證是否至少選擇了一個受文者
+        const hasValidRecipients = recipients.every(recipient => recipient.id);
+        if (!hasValidRecipients) {
+            alert('請為所有位置選擇受文者');
+            return;
+        }
+        
+        // 準備提交數據
+        const formData = new FormData(this);
+        formData.set('recipients', JSON.stringify(recipients));
+        
+        // 發送請求
+        fetch(window.location.href, {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 'success') {
+                alert('受文者調整成功');
+                window.location.href = '{{ url_for("main.view_document", doc_id=document.id) }}';
+            } else {
+                alert('錯誤：' + data.message);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('發生錯誤，請稍後再試');
+        });
+    };
+    
+    // 初始化頁面時顯示現有的受文者
+    document.addEventListener('DOMContentLoaded', function() {
+        // 如果沒有現有的受文者，添加一個空的受文者
+        if (recipients.length === 0) {
+            addRecipient();
+        } else {
+            updateRecipientsList();
+        }
+    });
+   // ... existing code ...
+    // 防止瀏覽器後退
+    window.onpageshow = function(event) {
+        if (event.persisted) {
+            window.location.reload();
+        }
+    };
+    
+    window.history.forward();
+    function noBack() {
+        window.history.forward();
+    }
+    </script>
+    {% block extra_scripts %}{% endblock %}
+</body>
+</html>
+    

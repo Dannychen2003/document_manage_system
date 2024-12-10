@@ -1,0 +1,147 @@
+<!doctype html>
+<html lang="zh-TW">
+<head>
+    <!-- ... existing meta tags ... -->
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Icons", "Helvetica Neue", Helvetica, Arial, sans-serif;
+            background-color: #ffffff;
+            color: #1d1d1f;
+            line-height: 1.47059;
+        }
+
+        .container {
+            max-width: 680px;
+            margin: 0 auto;
+            padding: 120px 20px;
+        }
+
+        h1 {
+            font-size: 40px;
+            font-weight: 600;
+            text-align: center;
+            margin-bottom: 50px;
+        }
+
+        .form-group {
+            margin-bottom: 24px;
+        }
+
+        input[type="text"],
+        input[type="password"] {
+            width: 100%;
+            padding: 15px;
+            border: 1px solid #d2d2d7;
+            border-radius: 12px;
+            font-size: 17px;
+            outline: none;
+            transition: border-color 0.2s ease;
+        }
+
+        input[type="text"]:focus,
+        input[type="password"]:focus {
+            border-color: #0066cc;
+            box-shadow: 0 0 0 4px rgba(0, 102, 204, 0.1);
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 17px;
+            font-weight: 400;
+        }
+
+        button[type="submit"] {
+            width: 100%;
+            padding: 15px;
+            background-color: #0066cc;
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 17px;
+            font-weight: 400;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+        }
+
+        button[type="submit"]:hover {
+            background-color: #0056b3;
+        }
+
+        .forgot-password-btn {
+            display: block;
+            text-align: center;
+            color: #0066cc;
+            text-decoration: none;
+            font-size: 17px;
+            margin-top: 20px;
+            background: none;
+            border: none;
+            padding: 0;
+        }
+
+        .forgot-password-btn:hover {
+            text-decoration: underline;
+        }
+
+        .messages {
+            list-style: none;
+            padding: 0;
+            margin: 20px 0;
+            color: #ff3b30;
+            text-align: center;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>電子公文系統</h1>
+        <form action="{{ url_for('main.login') }}" method="POST">
+            <div class="form-group">
+                <label for="account">帳號</label>
+                <input type="text" id="account" name="account" required autocomplete="username">
+            </div>
+
+            <div class="form-group">
+                <label for="password">密碼</label>
+                <input type="password" id="password" name="password" required autocomplete="current-password">
+            </div>
+
+            <div class="form-group">
+                <button type="submit">登入</button>
+            </div>
+        </form>
+
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                <ul class="messages">
+                    {% for message in messages %}
+                        <li>{{ message }}</li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+        {% endwith %}
+        
+        <a href="{{ url_for('main.forgot_password') }}" class="forgot-password-btn">忘記密碼？</a>
+    </div>
+
+ 
+
+    <!-- ... existing scripts ... -->
+  <script>
+    window.onpageshow = function(event) {
+        if (event.persisted) {
+            window.location.reload();
+        }
+    };
+    
+    window.history.forward();
+    function noBack() {
+        window.history.forward();
+    }
+</script>
+{% block extra_scripts %}{% endblock %}
+</script>
+</body>
+</html>

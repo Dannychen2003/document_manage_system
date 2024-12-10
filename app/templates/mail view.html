@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'SF Pro Icons', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+            line-height: 1.47059;
+            color: #1d1d1f;
+            margin: 0;
+            padding: 0;
+            background-color: #ffffff;
+            -webkit-font-smoothing: antialiased;
+        }
+        .email-container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        .header img {
+            width: 40px;
+            height: 40px;
+            margin-bottom: 20px;
+        }
+        .header h1 {
+            font-size: 32px;
+            line-height: 1.125;
+            font-weight: 600;
+            margin: 0;
+            color: #1d1d1f;
+        }
+        .content {
+            font-size: 17px;
+            line-height: 1.47059;
+            color: #1d1d1f;
+        }
+        .greeting {
+            margin-bottom: 30px;
+        }
+        .button-container {
+            text-align: center;
+            margin: 35px 0;
+        }
+        .button {
+            display: inline-block;
+            background-color: #0071e3;
+            color: #ffffff;
+            text-decoration: none;
+            padding: 12px 22px;
+            border-radius: 980px;
+            font-size: 17px;
+            line-height: 1.17648;
+            font-weight: 400;
+            letter-spacing: -0.022em;
+            min-width: 160px;
+            text-align: center;
+        }
+        .link-container {
+            margin: 30px 0;
+            padding: 20px;
+            background-color: #f5f5f7;
+            border-radius: 12px;
+            word-break: break-all;
+            font-size: 14px;
+            color: #86868b;
+        }
+        .warning {
+            margin-top: 35px;
+            padding: 0;
+            font-size: 14px;
+            color: #86868b;
+        }
+        .warning h2 {
+            font-size: 17px;
+            color: #1d1d1f;
+            margin-bottom: 15px;
+        }
+        .warning ul {
+            list-style-type: none;
+            padding: 0;
+            margin: 0;
+        }
+        .warning li {
+            margin-bottom: 10px;
+            padding-left: 24px;
+            position: relative;
+        }
+        .warning li:before {
+            content: "•";
+            position: absolute;
+            left: 8px;
+            color: #86868b;
+        }
+        .footer {
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid #d2d2d7;
+            text-align: center;
+            font-size: 12px;
+            color: #86868b;
+        }
+        .footer p {
+            margin: 5px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="email-container">
+        <div class="header">
+            <h1>重設您的密碼</h1>
+        </div>
+        
+        <div class="content">
+            <div class="greeting">
+                <p>您好，</p>
+                <p>我們收到了重設密碼的請求。請點擊下方按鈕以重設您的密碼。</p>
+            </div>
+            
+            <div class="button-container">
+                <a href="{{ reset_link }}" class="button">重設密碼</a>
+            </div>
+            
+            <p>如果按鈕無法正常運作，您也可以複製以下連結至瀏覽器：</p>
+            <div class="link-container">
+                {{ reset_link }}
+            </div>
+            
+            <div class="warning">
+                <h2>重要提醒</h2>
+                <ul>
+                    <li>此連結將於 24 小時後失效</li>
+                    <li>如果您沒有要求重設密碼，請忽略此郵件</li>
+                    <li>為確保帳戶安全，請勿將此郵件轉寄給他人</li>
+                </ul>
+            </div>
+        </div>
+        
+        <div class="footer">
+            <p>此郵件由系統自動發送，請勿直接回覆</p>
+            <p>© 2024 文件管理系統。保留一切權利。</p>
+        </div>
+    </div>
+</body>
+</html>

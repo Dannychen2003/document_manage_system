@@ -1,0 +1,321 @@
+<!doctype html>
+<html lang="zh-TW">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+     <!-- 缓存控制元标签 -->
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0"> 
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <title>電子公文系統</title>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh; /* 使頁面至少佔滿整個視口高度 */
+        }
+        .box {
+            border-style: none;
+            margin-left: 2%;
+            margin-right: 2%;
+            display: block;
+            overflow: hidden;
+        }
+        footer {
+            background-color: #000000;
+            height: 30px;
+            margin-top: auto; /* 將footer推到頁面底部 */
+        }
+        .footer-text {
+            text-align: center;
+            font-size: 16px;
+            color: white;
+            line-height: 30px;
+        }
+        .alert svg {
+            width: 1.5em; /* 調整圖示的寬度 */
+            height: 1.5em; /* 調整圖示的高度 */
+        }
+        .custom-form {
+            max-width: 600px; /* 設置最大寬度 */
+            width: 100%; /* 設置寬度為 100% */
+            margin: auto; /* 使表單居中 */
+        }
+        .readonly-input {
+            background-color: #bab6b682; /* 設置唯讀輸入框的背景顏色為灰色 */
+            cursor: not-allowed; /* 設置光標為禁止樣式 */
+        }
+        main.container {
+        margin-bottom: 60px; /* 調整這個值來改變與 footer 的距離 */
+    }
+        .outlook-table {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0;
+        background: #fff;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+
+    .outlook-table thead th {
+        background: #f8f9fa;
+        padding: 12px 15px;
+        font-weight: 600;
+        color: #666;
+        border-bottom: 2px solid #dee2e6;
+        white-space: nowrap;
+    }
+
+    .outlook-table tbody tr {
+        border-bottom: 1px solid #eee;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+
+    .outlook-table tbody tr:hover {
+        background-color: #f5f8ff;
+    }
+
+    .outlook-table tbody tr.unread {
+        font-weight: 600;
+        background-color: #f8f9fa;
+    }
+    outlook-table td {
+        padding: 12px 15px;
+        vertical-align: middle;
+        color: #333;
+    }
+
+    .outlook-table .urgency-high {
+        color: #dc3545;
+    }
+
+    .outlook-table .urgency-medium {
+        color: #ffc107;
+    }
+
+    .outlook-table .urgency-low {
+        color: #28a745;
+    }
+
+    /* 狀態標籤樣式 */
+    .status-badge {
+        display: inline-block;
+        padding: 4px 8px;
+        border-radius: 4px;
+        font-size: 12px;
+        font-weight: 500;
+    }
+
+    .status-pending {
+        background-color: #fff3cd;
+        color: #856404;
+    }
+
+    .status-processed {
+        background-color: #d4edda;
+        color: #155724;
+    }
+    </style>
+</head>
+
+<body>
+    <header>
+        <nav class="navbar navbar-expand-lg navbar-dark" style="background-color: rgb(46, 49, 46);">
+            <div class="container-fluid">
+              <a class="navbar-brand" href="{{ url_for('main.index') }}">電子公文系統</a>
+              <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                  <span class="navbar-toggler-icon"></span>
+              </button>
+              <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                  <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                      <li class="nav-item">
+                          <a class="nav-link" href="{{ url_for('main.index') }}">收文夾</a>
+                      </li>
+                      <li class="nav-item">
+                          <a class="nav-link" href="{{ url_for('main.upload') }}">公文製作</a>
+                      </li>
+                      
+                      <li class="nav-item">
+                          <a class="nav-link active" href="{{ url_for('main.find') }}">查詢</a>
+                      </li>
+                      <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">設定</a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="{{ url_for('main.profile') }}">個人資料設定</a></li>
+                        </ul>
+                    </li>
+                  </ul>
+                  {% if user %}
+                  <span class="navbar-text">
+                      {{ user.username }} - {{ get_department_display_name(user.department) }}&nbsp;&nbsp;
+                  </span>
+                  {% endif %}
+                  <form action="{{ url_for('main.logout') }}" method="post" style="display:inline;">
+                      <button type="submit" class="btn btn-danger">登出</button>
+                  </form>
+              </div>
+          </div>
+      </nav>
+        <div class="alert alert-primary d-flex align-items-center" role="alert">
+          <svg xmlns="http://www.w3.org/2000/svg" class="bi info-fill flex-shrink-0 me-2" viewBox="0 0 16 16" role="img" aria-label="警告：">
+              <path d="M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16zm.93-9.412-1 4.705c-.07.34.029.533.304.533.194 0 .487-.07.686-.246l-.088.416c-.287.346-.92.598-1.465.598-.703 0-1.002-.422-.808-1.319l.738-3.468c.064-.293.006-.399-.287-.47l-.451-.081.082-.381 2.29-.287zM8 5.5a1 1 0 1 1 0-2 1 1 0 0 1 0 2z"/>
+          </svg>
+          <div>公告:</div>
+      </div>
+
+    </header>
+
+    <main class="container mt-4">
+        <h1 style="text-align:left;text-decoration-line: overline;text-decoration-color:#111111;">查詢</h1><br>
+        <form id="profileForm" class="custom-form">
+                
+            <div class="form-group col-md-8">
+                <label for="document_number">文號</label>
+                <input type="text" class="form-control" id="document_number" name="document_number">
+            </div>
+            <div class="form-group col-md-8">
+                <label for="subject">公文主旨</label>
+                <input type="text" class="form-control" id="subject" name="subject">
+            </div>
+            <div class="form-group col-md-8">
+                <label>日期區間</label>
+                <div class="row">
+                    <div class="col-md-6">
+                        <input type="date" class="form-control" id="startDate" name="startDate">
+                    </div>
+                    <div class="col-md-6">
+                        <input type="date" class="form-control" id="endDate" name="endDate">
+                    </div>
+                </div>
+            </div>
+            
+            <div class="mt-3 mb-3">
+                <button type="submit" class="btn btn-primary me-3">查詢</button>
+                <button type="reset" class="btn btn-secondary">重置</button>
+            </div>
+        </form>
+        <table class="outlook-table">
+            <thead>
+                <tr>
+                    <th>速別</th>
+                    <th >類型</th>
+                    <th >文號</th>
+                    <th >主旨</th>
+                    <th >創文日期</th>      
+                    <th >簽核日期</th>
+                    <th >截止日期</th>
+                    <th >受文者</th>
+                    <th >狀態</th>
+                </tr>
+            </thead>
+            <tbody id="resultsTable">
+                <!-- 搜尋結果將顯示在這裡 -->
+            </tbody>
+        </table>
+    </div>
+    </main> 
+       
+
+    <footer>
+        <p class="footer-text">©2024專題</p>
+    </footer>
+    <script>
+        window.onpageshow = function(event) {
+            if (event.persisted) {
+                window.location.reload();
+            }
+        };
+        
+        window.history.forward();
+        function noBack() {
+            window.history.forward();
+        }
+    </script>
+    {% block extra_scripts %}{% endblock %}
+</body>
+// ... existing code ...
+<script>
+    // 页面刷新控制
+    window.onpageshow = function(event) {
+        if (event.persisted) {
+            window.location.reload();
+        }
+    };
+    
+    window.history.forward();
+    function noBack() {
+        window.history.forward();
+    }
+
+    document.getElementById('profileForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        const startDate = document.getElementById('startDate').value;
+        const endDate = document.getElementById('endDate').value;
+        
+        // 檢查日期區間
+        if ((startDate && !endDate) || (!startDate && endDate)) {
+            alert('請同時填寫起始和結束日期');
+            return;
+        }
+        
+        // 檢查日期順序
+        if (startDate && endDate && new Date(startDate) > new Date(endDate)) {
+            alert('起始日期不能大於結束日期');
+            return;
+        }
+        
+        // 獲取表單數據
+        const formData = {
+            document_number: document.getElementById('document_number').value,
+            subject: document.getElementById('subject').value,
+            startDate: startDate,
+            endDate: endDate
+        };
+
+        // 發送搜索請求
+        fetch('/api/search', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(formData)
+        })
+        .then(response => response.json())
+        .then(data => {
+            const resultsTable = document.getElementById('resultsTable');
+            resultsTable.innerHTML = '';
+            
+            if (data.length === 0) {
+                const row = document.createElement('tr');
+                row.innerHTML = '<td colspan="8" class="text-center">未找到符合條件的公文</td>';
+                resultsTable.appendChild(row);
+                return;
+            }
+
+            data.forEach(doc => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${doc.priority || ''}</td>
+                    <td>${doc.type || ''}</td>
+                    <td>${doc.document_number || ''}</td>
+                    <td>${doc.subject || ''}</td>
+                    <td>${doc.created_at || ''}</td>
+                    <td>${doc.signature_date || ''}</td>
+                    <td>${doc.deadline || ''}</td>
+                    <td>${doc.recipient || ''}</td>
+                    <td>${doc.status || ''}</td>
+                `;
+                resultsTable.appendChild(row);
+            });
+        })
+        .catch(error => {
+            console.error('搜尋錯誤:', error);
+            alert('搜尋過程中發生錯誤，請稍後重試');
+        });
+        
+    });
+</script>
+</html>

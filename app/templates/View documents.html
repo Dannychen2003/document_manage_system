@@ -1,0 +1,549 @@
+<!doctype html>
+<html lang="zh-TW">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <title>公文詳細資料 - 文件管理系統</title>
+    <style>
+     
+        body {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh; /* 使頁面至少佔滿整個視口高度 */
+        }
+
+        footer {
+            background-color: #000000;
+            height: 30px;
+            margin-top: auto; /* 將footer推到頁面底部 */
+        }
+        .footer-text {
+            text-align: center;
+            font-size: 16px;
+            color: white;
+            line-height: 30px;
+        }
+        .alert svg {
+            width: 1.5em; /* 調整圖示的寬度 */
+            height: 1.5em; /* 調整圖示的高度 */
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 24px;
+            font-family: "Mi Sans", "PingFang TC", sans-serif;
+            background-color: #ffffff;
+            color: #333333;
+        }
+
+        .section {
+            margin-bottom: 48px;
+        }
+
+        .section-title {
+            font-size: 32px;
+            font-weight: normal;
+            margin-bottom: 24px;
+            color: #191919;
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 32px;
+            margin-bottom: 40px;
+        }
+
+        .info-item {
+            border-bottom: 1px solid #f5f5f5;
+            padding-bottom: 16px;
+        }
+
+        .info-label {
+            font-size: 16px;
+            color: #666666;
+            margin-bottom: 8px;
+        }
+
+        .info-value {
+            font-size: 20px;
+            color: #191919;
+            font-weight: 500; /* 稍微加粗 */
+            line-height: 1.8;
+        }
+
+        .content-box {
+            background-color: #fafafa;
+            padding: 32px;
+            border-radius: 8px;
+            margin-bottom: 32px;
+        }
+
+        .content-title {
+            font-size: 20px;
+            color: #191919;
+            margin-bottom: 16px;
+        }
+
+        .content-text {
+            font-size: 20px;
+            color: #333333;
+            line-height: 1.8;
+            font-weight: 500; /* 稍微加粗 */
+        }
+
+           
+    .attachment-container {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+    }
+
+    .attachment-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 16px;
+        background-color: #ffffff;
+        border: 1px solid #e6e6e6;
+        border-radius: 8px;
+        transition: all 0.2s ease;
+    }
+
+    .attachment-item:hover {
+        background-color: #f8f9fa;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    }
+
+    .attachment-info {
+        flex: 1;
+    }
+
+    .attachment-name {
+        font-size: 16px;
+        color: #191919;
+        margin-bottom: 4px;
+    }
+
+    .attachment-meta {
+        font-size: 14px;
+        color: #666666;
+    }
+
+    .attachment-download {
+        display: inline-flex;
+        align-items: center;
+        padding: 8px 16px;
+        background-color: #0066cc;
+        color: white;
+        border-radius: 4px;
+        text-decoration: none;
+        font-size: 14px;
+        transition: background-color 0.2s ease;
+    }
+
+    .attachment-download:hover {
+        background-color: #0052a3;
+        color: white;
+    }
+
+    .attachment-download i {
+        margin-right: 8px;
+    }
+
+    .no-attachment {
+        color: #666666;
+        font-size: 16px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    /* Font Awesome 圖示的間距 */
+    .fas {
+        margin-right: 8px;
+    }
+        .button-group {
+            display: flex;
+            gap: 16px;
+            margin-top: 40px;
+        }
+
+       
+    </style>
+</head>
+<body>
+    <header>
+        <nav class="navbar navbar-expand-lg navbar-dark" style="background-color: rgb(46, 49, 46);">
+          <div class="container-fluid">
+            <a class="navbar-brand" href="{{ url_for('main.index') }}">電子公文系統</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="{{ url_for('main.index') }}">收文夾</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('main.upload') }}">公文製作</a>
+                    </li>
+                    
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('main.find') }}">查詢</a>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">設定</a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="{{ url_for('main.profile') }}">個人資料設定</a></li>
+                        </ul>
+                    </li>
+                </ul>
+                {% if user %}
+                <span class="navbar-text">
+                    {{ user.username }} - {{ get_department_display_name(user.department) }}&nbsp;&nbsp;
+                </span>
+                {% endif %}
+                <form action="{{ url_for('main.logout') }}" method="post" style="display:inline;">
+                    <button type="submit" class="btn btn-danger">登出</button>
+                </form>
+            </div>
+        </div>
+    </nav>
+    <div class="alert alert-primary d-flex align-items-center" role="alert">
+      <svg xmlns="http://www.w3.org/2000/svg" class="bi info-fill flex-shrink-0 me-2" viewBox="0 0 16 16" role="img" aria-label="警告：">
+          <path d="M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16zm.93-9.412-1 4.705c-.07.34.029.533.304.533.194 0 .487-.07.686-.246l-.088.416c-.287.346-.92.598-1.465.598-.703 0-1.002-.422-.808-1.319l.738-3.468c.064-.293.006-.399-.287-.47l-.451-.081.082-.381 2.29-.287zM8 5.5a1 1 0 1 1 0-2 1 1 0 0 1 0 2z"/>
+      </svg>
+      <div>公告:</div>
+  </div>
+
+    </header>
+
+    <div class="container">
+        <div class="section">
+            <h1 class="section-title">公文詳細資料</h1>
+
+            <!-- 添加 Modal -->
+<div class="modal fade" id="progressModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">公文簽核進度</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <!-- 進度內容將通過 JavaScript 動態載入 -->
+            </div>
+        </div>
+    </div>
+</div>            
+            <div class="info-grid">
+                <div class="info-item">
+                    <div class="info-label">文號</div>
+                    <div class="info-value">{{ document.number }}</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">速別</div>
+                    <div class="info-value">{{ document.urgency }}</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">類型</div>
+                    <div class="info-value">{{ document.type }}</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">密等</div>
+                    <div class="info-value">{{ document.classification }}</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">撰稿日期</div>
+                    <div class="info-value">{{ document.created_at.strftime('%Y-%m-%d') }}</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">期限</div>
+                    <div class="info-value">{{ document.deadline.strftime('%Y-%m-%d') }}</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">承辦人</div>
+                    <div class="info-value">{{ document.creator.username }} - {{ get_department_display_name(document.creator.department) }}</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">處理狀態</div>
+                    <div class="info-value">
+                        {% if document.status == '待簽核' %}
+                        待簽核
+                        {% else %}
+                            {{ document.status }}
+                        {% endif %}
+                         <!-- 修改進度查詢按鈕 -->
+            <button onclick="showProgress('{{ document.id }}')" class="btn btn-info btn-sm">
+                <i class="fas fa-tasks">進度查詢</i>
+            </button>
+                    </div>
+                </div>
+            </div>
+            </div>
+            
+
+            <div class="content-box">
+                <div class="content-title">主旨</div>
+                <div class="content-text">{{ document.subject }}</div><br>
+                <div class="content-title">說明</div>
+                <div class="content-text">{{ document.description }}</div>
+            </div>
+            <div class="content-box">
+                <div class="content-title">附件</div>
+                {% if attachments %}
+                    <div class="attachment-container">
+                        {% for attachment in attachments %}
+                        <div class="attachment-item">
+                            <div class="attachment-info">
+                                <div class="attachment-name">
+                                    <i class="fas fa-paperclip"></i>
+                                    {{ attachment.filename }}
+                                </div>
+                                <div class="attachment-meta">
+                                    說明: {{ attachment.description or '無' }}
+                                </div>
+                            </div>
+                            <a href="{{ url_for('main.download_attachment', attachment_id=attachment.id) }}" 
+                               class="attachment-download">
+                                <i class="fas fa-download"></i>
+                                下載
+                            </a>
+                        </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <div class="no-attachment">
+                        <i class="fas fa-info-circle"></i>
+                        此公文無附件
+                    </div>
+                {% endif %}
+            </div>
+            
+
+
+            <!-- 在 button-group 中添加改分按鈕 -->
+<div class="button-group">
+    <a href="{{ url_for('main.index') }}" class="btn btn-secondary">返回</a>
+    {% if document.current_handler_id == user.id and document.status == '待簽核' %}
+        <a href="{{ url_for('main.sign', doc_id=document.id) }}" class="btn btn-primary">進行簽核</a>
+        <button type="button" class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#reassignModal">
+            申請改分
+        </button>
+    {% endif %}
+</div>
+
+<!-- 添加改分彈出框 -->
+<div class="modal fade" id="reassignModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">申請改分</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="reassignForm">
+                    <div class="mb-3">
+                        <label for="reassignReason" class="form-label">改分原因</label>
+                        <textarea class="form-control" id="reassignReason" name="reason" required></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+                <button type="button" class="btn btn-warning" onclick="submitReassign('{{ document.id }}')">確認送出</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 添加處理改分的 JavaScript -->
+<script>
+function submitReassign(docId) {
+    const reason = document.getElementById('reassignReason').value;
+    if (!reason) {
+        alert('請填寫改分原因');
+        return;
+    }
+
+    fetch(`/request_reassign/${docId}`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ reason: reason })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.status === 'success') {
+            alert('改分申請已送出');
+            window.location.href = "{{ url_for('main.index') }}";
+        } else {
+            alert(data.message || '改分申請失敗');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('改分申請失敗');
+    });
+}
+</script>
+
+        </div>
+    </div>
+
+    <footer>
+        <p class="footer-text">©2024專題</p>
+    </footer>
+
+    <script>
+        function showProgress(docId) {
+    const modal = new bootstrap.Modal(document.getElementById('progressModal'));
+    const modalBody = document.querySelector('#progressModal .modal-body');
+    
+    // 清空之前的內容
+    modalBody.innerHTML = '<div class="text-center"><div class="spinner-border" role="status"></div></div>';
+    
+    // 顯示 Modal
+    modal.show();
+    
+    // 獲取進度數據
+    fetch(`/document_progress/${docId}`)
+        .then(response => response.json())
+        .then(data => {
+            if (data.error) {
+                modalBody.innerHTML = `<div class="alert alert-danger">${data.error}</div>`;
+                return;
+            }
+            
+            // 構建進度內容
+            let content = `
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <h6 class="card-title">文件資訊</h6>
+                        <p class="mb-1"><strong>文號：</strong>${data.document.number}</p>
+                        <p class="mb-0"><strong>主旨：</strong>${data.document.subject}</p>
+                    </div>
+                </div>
+
+                <div class="progress mb-4" style="height: 25px;">
+                    <div class="progress-bar" role="progressbar" 
+                         style="width: ${data.progress_percentage}%" 
+                         aria-valuenow="${data.progress_percentage}" 
+                         aria-valuemin="0" 
+                         aria-valuemax="100">
+                        ${Math.round(data.progress_percentage)}%
+                    </div>
+                </div>
+
+                <div class="timeline">`;
+            
+            // 添加每個進度項目
+            data.progress_data.forEach(progress => {
+                content += `
+                    <div class="timeline-item">
+                        <div class="timeline-badge ${getStatusClass(progress.status)}">
+                            ${progress.order}
+                        </div>
+                        <div class="timeline-content">
+                            <div class="card">
+                                <div class="card-body">
+                                    <h6 class="card-title">
+                                        ${progress.department} - ${progress.username}
+                                        ${progress.is_current ? '<span class="badge bg-primary">當前處理人</span>' : ''}
+                                    </h6>
+                                    <p class="card-text">
+                                        <strong>狀態：</strong>
+                                        <span class="badge ${getStatusClass(progress.status)}">
+                                            ${progress.status}
+                                        </span>
+                                    </p>
+                                    ${progress.signature_date ? 
+                                        `<p class="card-text"><strong>處理時間：</strong>${progress.signature_date}</p>` : ''}
+                                    ${progress.signature_message ? 
+                                        `<p class="card-text"><strong>簽核意見：</strong>${progress.signature_message}</p>` : ''}
+                                </div>
+                            </div>
+                        </div>
+                    </div>`;
+            });
+            
+            content += `</div>`;
+            
+            // 添加樣式
+            content += `
+                <style>
+                    .timeline {
+                        position: relative;
+                        padding: 20px 0;
+                    }
+                    .timeline:before {
+                        content: '';
+                        position: absolute;
+                        top: 0;
+                        left: 50px;
+                        height: 100%;
+                        width: 2px;
+                        background: #ddd;
+                    }
+                    .timeline-item {
+                        position: relative;
+                        margin-bottom: 30px;
+                    }
+                    .timeline-badge {
+                        width: 40px;
+                        height: 40px;
+                        border-radius: 50%;
+                        text-align: center;
+                        line-height: 40px;
+                        color: white;
+                        position: absolute;
+                        left: 31px;
+                        top: 16px;
+                        z-index: 1;
+                    }
+                    .timeline-content {
+                        margin-left: 100px;
+                        position: relative;
+                    }
+                    .timeline-content .card {
+                        border-radius: 8px;
+                    }
+                </style>`;
+            
+            modalBody.innerHTML = content;
+        })
+        .catch(error => {
+            modalBody.innerHTML = `<div class="alert alert-danger">載入進度資訊時發生錯誤</div>`;
+            console.error('Error:', error);
+        });
+}
+
+function getStatusClass(status) {
+    switch (status) {
+        case '已簽核': return 'bg-success';
+        case '退件': return 'bg-danger';
+        case '待簽核': return 'bg-warning';
+        default: return 'bg-secondary';
+    }
+}
+        window.onpageshow = function(event) {
+            if (event.persisted) {
+                window.location.reload();
+            }
+        };
+        
+        window.history.forward();
+        function noBack() {
+            window.history.forward();
+        }
+    </script>
+</body>
+</html>

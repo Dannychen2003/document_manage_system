@@ -1,0 +1,139 @@
+<!doctype html>
+<html lang="zh-TW">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <title>電子公文系統</title>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+        .box {
+            border-style: none;
+            margin-left: 2%;
+            margin-right: 2%;
+            display: block;
+            overflow: hidden;
+        }
+        footer {
+            background-color: #000000;
+            height: 30px;
+            margin-top: auto;
+        }
+        .footer-text {
+            text-align: center;
+            font-size: 16px;
+            color: white;
+            line-height: 30px;
+        }
+        .alert svg {
+            width: 1.5em;
+            height: 1.5em;
+        }
+        .dashboard-card {
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .dashboard-card .card-body {
+            padding: 2rem;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <nav class="navbar navbar-expand-lg navbar-dark" style="background-color: rgb(46, 49, 46);">
+            <div class="container-fluid">
+                <a class="navbar-brand" href="{{ url_for('main.dashboard') }}">電子公文系統</a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                    <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                        <li class="nav-item">
+                            <a class="nav-link active" href="{{ url_for('main.dashboard') }}">管理員儀表板</a>
+                        </li>
+                    </ul>
+                    <span class="navbar-text">系統管理員&nbsp;&nbsp;</span>
+                    <form action="{{ url_for('main.logout') }}" method="post" style="display:inline;">
+                        <button type="submit" class="btn btn-danger">登出</button>
+                    </form>
+                </div>
+            </div>
+        </nav>
+        <div class="alert alert-primary d-flex align-items-center" role="alert">
+            <svg xmlns="http://www.w3.org/2000/svg" class="bi info-fill flex-shrink-0 me-2" viewBox="0 0 16 16" role="img" aria-label="警告：">
+                <path d="M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16zm.93-9.412-1 4.705c-.07.34.029.533.304.533.194 0 .487-.07.686-.246l-.088.416c-.287.346-.92.598-1.465.598-.703 0-1.002-.422-.808-1.319l.738-3.468c.064-.293.006-.399-.287-.47l-.451-.081.082-.381 2.29-.287zM8 5.5a1 1 0 1 1 0-2 1 1 0 0 1 0 2z"/>
+            </svg>
+            <div>公告: 歡迎使用管理員儀表板</div>
+        </div>
+    </header>
+
+    <main class="container mt-4">
+        <h1 style="text-align:left;text-decoration-line: overline;text-decoration-color:#111111;">管理員儀表板</h1><br>
+        
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="alert alert-info" role="alert">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <div class="row">
+            <div class="col-md-6">
+                <div class="card dashboard-card">
+                    <div class="card-body">
+                        <h5 class="card-title">註冊新用戶</h5>
+                        <p class="card-text">創建新的系統用戶帳號，設置用戶權限及初始密碼。</p>
+                        <a href="{{ url_for('main.register') }}" class="btn btn-primary">註冊用戶</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card dashboard-card">
+                    <div class="card-body">
+                        <h5 class="card-title">修改密碼</h5>
+                        <p class="card-text">更改您的管理員帳戶密碼，建議定期更換以確保安全。</p>
+                        <a href="{{ url_for('main.change_password') }}" class="btn btn-secondary">修改密碼</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card dashboard-card">
+                    <div class="card-body">
+                        <h5 class="card-title">進入公文系統</h5>
+                        <p class="card-text">進入一般使用者介面，處理公文相關事務。</p>
+                        <a href="{{ url_for('main.index') }}" class="btn btn-success">進入系統</a>
+                    </div>
+        </div>
+    </main>
+
+    <footer>
+        <p class="footer-text">©2024專題</p>
+    </footer>
+
+    <script>
+        window.onpageshow = function(event) {
+            if (event.persisted) {
+                window.location.reload();
+            }
+        };
+        
+        window.history.forward();
+        function noBack() {
+            window.history.forward();
+        }
+    </script>
+    {% block extra_scripts %}{% endblock %}
+</body>
+</html>
